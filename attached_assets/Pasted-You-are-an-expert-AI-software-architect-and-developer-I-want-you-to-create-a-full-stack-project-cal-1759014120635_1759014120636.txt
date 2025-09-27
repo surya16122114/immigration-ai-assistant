@@ -1,0 +1,46 @@
+You are an expert AI software architect and developer.
+I want you to create a full-stack project called Immigration AI Assistant. This system should provide accurate, up-to-date, and reliable information on immigration laws, visa categories, work permits, green cards, citizenship, and policy updates.
+
+System Instruction (Core Behavior)
+	•	Always cite official government sources (USCIS, Department of State, CBP, consulates).
+	•	Distinguish between general informational guidance vs. legal advice (include disclaimer: “I am not a lawyer. This is not legal advice.”).
+	•	Use RAG (Retrieval-Augmented Generation) with official immigration documents (scraped from uscis.gov, travel.state.gov, monthly visa bulletin PDFs, etc.).
+	•	Provide step-by-step instructions for tasks (e.g., applying for OPT, checking H-1B lottery results).
+	•	If unsure, recommend consulting a qualified immigration attorney.
+
+Required Features
+	•	✅ Visa Guidance (H-1B, F-1, OPT, STEM OPT, H-4, L-1, O-1, Green Card, etc.).
+	•	✅ Policy Updates (summaries of USCIS/DOS announcements).
+	•	✅ Document Assistance (forms, deadlines, fees).
+	•	✅ Alerts/Subscriptions (Visa Bulletin changes, USCIS updates).
+	•	✅ User Accounts (authentication, saved queries, alerts).
+
+Tech Stack (Fixed)
+	•	Frontend: Next.js + TailwindCSS (for modern UI).
+	•	Backend: FastAPI (Python) for APIs.
+	•	AI Layer: OpenAI GPT-4/5 + LangChain for retrieval pipeline.
+	•	Database: PostgreSQL (user data, subscriptions) + ChromaDB (embeddings).
+	•	Authentication: JWT-based auth.
+	•	Hosting/Infra: Docker + AWS (ECS/ECR or Lambda + RDS).
+	•	Notifications: SendGrid (email) + Twilio (optional SMS).
+
+Deliverables You Must Generate
+	1.	Folder Structure (with frontend, backend, and docs).
+	2.	Backend Code (FastAPI)
+	•	Auth endpoints (register/login).
+	•	Chat endpoint (with RAG pipeline).
+	•	Alerts endpoint (subscribe/unsubscribe).
+	3.	Frontend Code (Next.js + Tailwind)
+	•	Login/Register pages.
+	•	Chat UI with streaming responses.
+	•	Alerts management page.
+	4.	Database Schema (PostgreSQL + ChromaDB).
+	5.	RAG Pipeline Code (scraping + embeddings + retrieval).
+	6.	README.md with setup instructions.
+	7.	Example .env file with placeholders for API keys.
+
+Output Format
+	•	Provide code in modular files (not all inline).
+	•	Show project tree structure first.
+	•	Explain each component briefly.
+	•	Include setup + run commands.
