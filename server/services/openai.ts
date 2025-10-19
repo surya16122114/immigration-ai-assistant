@@ -1,9 +1,13 @@
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-5" which was released August 7, 2025. do not change this unless explicitly requested by the user
+// Using GPT-4o-mini for optimal speed and cost efficiency while maintaining quality
 const openai = new OpenAI({ 
   apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "default_key"
 });
+
+// Simple in-memory cache for common queries (improves response time for repeated questions)
+const queryCache = new Map<string, { response: ImmigrationResponse; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 30; // 30 minutes
 
 interface ImmigrationResponse {
   content: string;
@@ -23,6 +27,14 @@ interface DocumentContext {
 class OpenAIService {
   async generateImmigrationResponse(query: string, context: DocumentContext[]): Promise<ImmigrationResponse> {
     try {
+      // Check cache first (significant speedup for repeated questions)
+      const cacheKey = `${query}:${context.map(c => c.content.substring(0, 50)).join(',')}`;
+      const cached = queryCache.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log('Cache hit for query:', query.substring(0, 50));
+        return cached.response;
+      }
+
       const systemPrompt = `You are an expert Immigration AI Assistant that provides accurate, up-to-date information on U.S. immigration laws, visa categories, work permits, green cards, citizenship, and policy updates.
 
 CRITICAL INSTRUCTIONS:
@@ -38,12 +50,13 @@ Document Context:
 ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join('\n')}`;
 
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Please answer this immigration question: ${query}` }
         ],
         response_format: { type: "json_object" },
+        temperature: 0.7,
       });
 
       const result = JSON.parse(response.choices[0].message.content || '{}');
@@ -55,10 +68,21 @@ ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join
         excerpt: doc.content.substring(0, 150) + '...'
       }));
 
-      return {
+      const aiResponse = {
         content: result.content || "I apologize, but I couldn't generate a proper response. Please try rephrasing your question.",
         sources: sources
       };
+
+      // Cache the response
+      queryCache.set(cacheKey, { response: aiResponse, timestamp: Date.now() });
+      
+      // Clean old cache entries (keep cache size manageable)
+      if (queryCache.size > 100) {
+        const oldestKey = queryCache.keys().next().value;
+        queryCache.delete(oldestKey);
+      }
+
+      return aiResponse;
     } catch (error) {
       console.error("OpenAI service error:", error);
       throw new Error("Failed to generate AI response");
@@ -82,7 +106,7 @@ ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join
   async summarizeDocument(content: string, documentType: string): Promise<string> {
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-5",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -93,6 +117,7 @@ ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join
             content: content
           }
         ],
+        temperature: 0.5,
       });
 
       return response.choices[0].message.content || "";

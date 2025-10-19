@@ -9,7 +9,7 @@ interface DocumentContext {
 }
 
 class RAGPipeline {
-  async searchRelevantDocuments(query: string, limit: number = 5): Promise<DocumentContext[]> {
+  async searchRelevantDocuments(query: string, limit: number = 3): Promise<DocumentContext[]> {
     try {
       // Generate embedding for the query
       const queryEmbedding = await openaiService.generateEmbedding(query);
