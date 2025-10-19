@@ -49,23 +49,15 @@ export default function Dashboard() {
 
       {/* Main Content Area */}
       <main className="ml-64 min-h-screen">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden px-8 pt-12 pb-8">
-          {/* Background Gradient Orbs */}
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-20 right-1/4 w-80 h-80 bg-violet-600/15 rounded-full blur-3xl"></div>
-          
-          <div className="relative z-10 max-w-6xl mx-auto">
-            <h1 className="text-5xl font-heading font-bold mb-4">
-              Get Expert Help to{" "}
-              <span className="text-gradient">Secure Your U.S Visa</span>
+        {/* Welcome Header */}
+        <div className="px-8 pt-8 pb-6">
+          <div className="max-w-6xl mx-auto">
+            <h1 className="text-3xl font-heading font-bold mb-2">
+              Welcome back, <span className="text-gradient">{user?.first_name || 'there'}</span>!
             </h1>
-            <p className="text-xl text-muted-foreground mb-8 max-w-2xl">
-              AI tools and expert lawyers guide you to the right visa and help you apply with confidence.
+            <p className="text-muted-foreground">
+              Your immigration assistant dashboard
             </p>
-            <button className="btn-premium" data-testid="button-free-evaluation">
-              Free Visa Evaluation
-            </button>
           </div>
         </div>
 
@@ -80,48 +72,6 @@ export default function Dashboard() {
 
             {/* Right Sidebar - Takes 1 column */}
             <div className="space-y-6">
-              {/* Success Rate Card */}
-              <div className="card-premium p-6">
-                <h3 className="font-heading font-semibold text-lg mb-4">Chances of Success</h3>
-                <div className="flex items-center justify-center py-6">
-                  <div className="relative w-32 h-32">
-                    <svg className="progress-ring-glow w-full h-full -rotate-90">
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        stroke="hsl(240, 10%, 20%)"
-                        strokeWidth="8"
-                        fill="none"
-                      />
-                      <circle
-                        cx="64"
-                        cy="64"
-                        r="56"
-                        stroke="url(#gradient)"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray="351.858"
-                        strokeDashoffset="87.965"
-                        strokeLinecap="round"
-                      />
-                      <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="hsl(160, 60%, 50%)" />
-                          <stop offset="100%" stopColor="hsl(160, 60%, 40%)" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-4xl font-bold text-gradient">83%</span>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground text-center mt-4">
-                  Based on your profile and current immigration trends
-                </p>
-              </div>
-
               <CaseProgress />
               <AlertSubscriptions />
             </div>
