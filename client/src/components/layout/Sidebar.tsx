@@ -100,11 +100,11 @@ export default function Sidebar() {
                   {getInitials(user?.firstName, user?.lastName)}
                 </AvatarFallback>
               </Avatar>
-              <div className="flex-1 text-left">
-                <p className="text-sm font-medium text-foreground">
+              <div className="flex-1 text-left min-w-0">
+                <p className="text-sm font-medium text-foreground truncate">
                   {getFullName(user?.firstName, user?.lastName)}
                 </p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
+                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
               <i className="fas fa-ellipsis-v text-muted-foreground"></i>
             </button>
