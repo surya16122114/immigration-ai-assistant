@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ export default function ChatInterface() {
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [pendingMessage, setPendingMessage] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -72,8 +73,11 @@ export default function ChatInterface() {
       });
       return response.json();
     },
-    onSuccess: (data) => {
-      setMessages(prev => [...prev, data.userMessage, data.assistantMessage]);
+    onSuccess: async (data, variables) => {
+      // Invalidate and refetch messages for this conversation
+      await queryClient.invalidateQueries({
+        queryKey: ["/api/conversations", variables.conversationId, "messages"]
+      });
       setIsTyping(false);
     },
     onError: (error) => {
@@ -98,13 +102,17 @@ export default function ChatInterface() {
   });
 
   // Load conversation messages
-  const { data: conversationMessages } = useQuery({
+  const { data: conversationMessages } = useQuery<Message[]>({
     queryKey: ["/api/conversations", currentConversationId, "messages"],
     enabled: !!currentConversationId,
-    onSuccess: (data: Message[]) => {
-      setMessages(data);
-    },
   });
+
+  // Sync conversation messages to state (replaces deprecated onSuccess)
+  useEffect(() => {
+    if (conversationMessages) {
+      setMessages(conversationMessages);
+    }
+  }, [conversationMessages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -120,8 +128,10 @@ export default function ChatInterface() {
     // Create conversation if it doesn't exist
     if (!currentConversationId) {
       const conversationTitle = message.substring(0, 50) + (message.length > 50 ? "..." : "");
+      setPendingMessage(message);
+      setMessage("");
       await createConversationMutation.mutateAsync(conversationTitle);
-      return; // Will retry after conversation is created
+      return; // Will send message via useEffect after conversation is created
     }
 
     setIsTyping(true);
@@ -133,6 +143,18 @@ export default function ChatInterface() {
       conversationId: currentConversationId,
     });
   };
+
+  // Send pending message after conversation is created
+  useEffect(() => {
+    if (currentConversationId && pendingMessage) {
+      setIsTyping(true);
+      sendMessageMutation.mutateAsync({
+        message: pendingMessage,
+        conversationId: currentConversationId,
+      });
+      setPendingMessage(null);
+    }
+  }, [currentConversationId, pendingMessage]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
