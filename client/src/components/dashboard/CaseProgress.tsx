@@ -24,22 +24,21 @@ interface Case {
 export default function CaseProgress() {
   const { toast } = useToast();
 
-  const { data: cases, isLoading } = useQuery({
+  const { data: cases, isLoading, error } = useQuery({
     queryKey: ["/api/cases"],
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-    },
   });
+
+  // Handle query errors (replaces deprecated onError)
+  if (error && isUnauthorizedError(error)) {
+    toast({
+      title: "Unauthorized",
+      description: "You are logged out. Logging in again...",
+      variant: "destructive",
+    });
+    setTimeout(() => {
+      window.location.href = "/api/login";
+    }, 500);
+  }
 
   const createCaseMutation = useMutation({
     mutationFn: async (caseData: Partial<Case>) => {
@@ -47,7 +46,7 @@ export default function CaseProgress() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/cases"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/cases"] });
       toast({
         title: "Success",
         description: "Case added successfully",
@@ -108,7 +107,6 @@ export default function CaseProgress() {
       status: "in-progress",
       progress: 60,
       receiptNumber: "MSC2490123456",
-      expectedCompletion: "April 2024",
       description: "H-1B extension application filed with premium processing"
     });
   };

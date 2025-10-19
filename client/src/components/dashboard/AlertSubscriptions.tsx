@@ -18,22 +18,21 @@ interface AlertSubscription {
 export default function AlertSubscriptions() {
   const { toast } = useToast();
 
-  const { data: subscriptions, isLoading } = useQuery({
+  const { data: subscriptions, isLoading, error } = useQuery({
     queryKey: ["/api/alert-subscriptions"],
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-    },
   });
+
+  // Handle query errors (replaces deprecated onError)
+  if (error && isUnauthorizedError(error)) {
+    toast({
+      title: "Unauthorized",
+      description: "You are logged out. Logging in again...",
+      variant: "destructive",
+    });
+    setTimeout(() => {
+      window.location.href = "/api/login";
+    }, 500);
+  }
 
   const updateSubscriptionMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: string; isActive: boolean }) => {
@@ -41,7 +40,7 @@ export default function AlertSubscriptions() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/alert-subscriptions"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/alert-subscriptions"] });
       toast({
         title: "Success",
         description: "Alert subscription updated",
@@ -76,7 +75,7 @@ export default function AlertSubscriptions() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/alert-subscriptions"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/alert-subscriptions"] });
       toast({
         title: "Success",
         description: "Alert subscription created",

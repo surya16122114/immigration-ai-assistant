@@ -18,22 +18,21 @@ interface SavedQuery {
 export default function SavedQueries() {
   const { toast } = useToast();
 
-  const { data: savedQueries, isLoading } = useQuery({
+  const { data: savedQueries, isLoading, error } = useQuery({
     queryKey: ["/api/saved-queries"],
-    onError: (error) => {
-      if (isUnauthorizedError(error)) {
-        toast({
-          title: "Unauthorized",
-          description: "You are logged out. Logging in again...",
-          variant: "destructive",
-        });
-        setTimeout(() => {
-          window.location.href = "/api/login";
-        }, 500);
-        return;
-      }
-    },
   });
+
+  // Handle query errors (replaces deprecated onError)
+  if (error && isUnauthorizedError(error)) {
+    toast({
+      title: "Unauthorized",
+      description: "You are logged out. Logging in again...",
+      variant: "destructive",
+    });
+    setTimeout(() => {
+      window.location.href = "/api/login";
+    }, 500);
+  }
 
   const createSampleQueryMutation = useMutation({
     mutationFn: async () => {
@@ -46,7 +45,7 @@ export default function SavedQueries() {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/saved-queries"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-queries"] });
       toast({
         title: "Success",
         description: "Sample query added",
@@ -77,7 +76,7 @@ export default function SavedQueries() {
       await apiRequest("DELETE", `/api/saved-queries/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["/api/saved-queries"]);
+      queryClient.invalidateQueries({ queryKey: ["/api/saved-queries"] });
       toast({
         title: "Success",
         description: "Query deleted",
