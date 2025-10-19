@@ -139,7 +139,7 @@ export default function PolicyUpdates() {
             </div>
           );
         })}
-      </CardContent>
+      </div>
       <div className="p-4 border-t border-border">
         <Button
           variant="ghost"
