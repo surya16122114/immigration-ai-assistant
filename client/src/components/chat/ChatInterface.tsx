@@ -178,18 +178,18 @@ export default function ChatInterface() {
   }, []);
 
   return (
-    <Card className="border-border">
-      <CardHeader className="border-b border-border">
-        <CardTitle className="flex items-center">
-          <i className="fas fa-robot text-primary mr-2"></i>
+    <div className="card-premium">
+      <div className="p-6 border-b border-border/50">
+        <h3 className="font-heading font-bold text-xl flex items-center">
+          <i className="fas fa-robot text-primary mr-3"></i>
           Immigration AI Assistant
-        </CardTitle>
-        <p className="text-sm text-muted-foreground mt-1">
+        </h3>
+        <p className="text-sm text-muted-foreground mt-2">
           Ask questions about visas, green cards, and immigration processes
         </p>
-      </CardHeader>
+      </div>
       
-      <CardContent className="p-0">
+      <div className="p-0">
         {/* Messages */}
         <div className="h-96 overflow-y-auto p-4 space-y-4" data-testid="chat-messages">
           {messages.map((msg) => (
@@ -283,7 +283,7 @@ export default function ChatInterface() {
             </Button>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
