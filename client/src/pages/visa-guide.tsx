@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/layout/Header";
+import Sidebar from "@/components/layout/Sidebar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -122,9 +122,9 @@ export default function VisaGuide() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Sidebar />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="ml-64 min-h-screen p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-foreground mb-4">Visa Guide</h1>
           <p className="text-muted-foreground">
@@ -274,7 +274,7 @@ export default function VisaGuide() {
             </p>
           </CardContent>
         </Card>
-      </div>
+      </main>
     </div>
   );
 }
