@@ -1,167 +1,142 @@
+import { useAuth } from "@/hooks/useAuth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Link, useLocation } from "wouter";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
-interface SidebarProps {
-  className?: string;
-}
-
-export default function Sidebar({ className }: SidebarProps) {
+export default function Sidebar() {
+  const { user } = useAuth();
   const [location] = useLocation();
 
-  const navigationItems = [
-    {
-      title: "Dashboard",
-      href: "/",
-      icon: "fas fa-home",
-    },
-    {
-      title: "Visa Guide",
-      href: "/visa-guide", 
-      icon: "fas fa-passport",
-    },
-    {
-      title: "Chat Assistant",
-      href: "/chat",
-      icon: "fas fa-robot",
-    },
-    {
-      title: "My Cases",
-      href: "/cases",
-      icon: "fas fa-tasks",
-    },
-    {
-      title: "Alerts",
-      href: "/alerts",
-      icon: "fas fa-bell",
-    },
-    {
-      title: "Documents",
-      href: "/documents",
-      icon: "fas fa-file-alt",
-    },
-    {
-      title: "Updates",
-      href: "/updates",
-      icon: "fas fa-bullhorn",
-    },
+  const handleLogout = () => {
+    window.location.href = "/api/logout";
+  };
+
+  const navItems = [
+    { href: "/", label: "Dashboard", icon: "fas fa-th-large" },
+    { href: "/visa-guide", label: "Visa Guides", icon: "fas fa-passport" },
+    { href: "/alerts", label: "Alerts", icon: "fas fa-bell" },
   ];
 
-  const quickLinks = [
-    {
-      title: "USCIS Case Status",
-      href: "https://egov.uscis.gov/casestatus/landing.do",
-      icon: "fas fa-external-link-alt",
-      external: true,
-    },
-    {
-      title: "Visa Bulletin",
-      href: "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin.html",
-      icon: "fas fa-calendar-alt",
-      external: true,
-    },
-    {
-      title: "Processing Times",
-      href: "https://egov.uscis.gov/processing-times/",
-      icon: "fas fa-clock",
-      external: true,
-    },
-    {
-      title: "Fee Schedule",
-      href: "https://www.uscis.gov/forms/filing-fees",
-      icon: "fas fa-dollar-sign",
-      external: true,
-    },
-  ];
+  const getInitials = (firstName?: string, lastName?: string) => {
+    if (firstName && lastName) {
+      return `${firstName[0]}${lastName[0]}`.toUpperCase();
+    }
+    if (firstName) {
+      return firstName.substring(0, 2).toUpperCase();
+    }
+    return "U";
+  };
+
+  const getFullName = (firstName?: string, lastName?: string) => {
+    if (firstName && lastName) {
+      return `${firstName} ${lastName}`;
+    }
+    if (firstName) {
+      return firstName;
+    }
+    return "User";
+  };
 
   return (
-    <div className={cn("flex flex-col w-64 bg-sidebar border-r border-sidebar-border", className)}>
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-card border-r border-border flex flex-col z-50">
       {/* Logo */}
-      <div className="flex items-center h-16 px-6 border-b border-sidebar-border">
+      <div className="p-6 border-b border-border">
         <Link href="/">
-          <div className="flex items-center space-x-2 cursor-pointer">
-            <i className="fas fa-passport text-sidebar-primary text-xl"></i>
-            <span className="font-bold text-sidebar-foreground">Immigration AI</span>
+          <div className="flex items-center space-x-3 cursor-pointer group">
+            <div className="w-10 h-10 bg-gradient-teal rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+              <i className="fas fa-globe-americas text-white text-lg"></i>
+            </div>
+            <div>
+              <h1 className="font-heading font-bold text-lg text-foreground">ImmigrationAI</h1>
+              <p className="text-xs text-muted-foreground">Powered by GPT-4</p>
+            </div>
           </div>
         </Link>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
-        <div className="mb-6">
-          <h3 className="px-2 text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-2">
-            Navigation
-          </h3>
-          {navigationItems.map((item) => (
+      <nav className="flex-1 p-4 space-y-2">
+        {navItems.map((item) => {
+          const isActive = location === item.href;
+          return (
             <Link key={item.href} href={item.href}>
-              <Button
-                variant={location === item.href ? "default" : "ghost"}
-                className={cn(
-                  "w-full justify-start text-left",
-                  location === item.href
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-                )}
-                data-testid={`sidebar-nav-${item.title.toLowerCase().replace(" ", "-")}`}
+              <a
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all ${
+                  isActive
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+                data-testid={`nav-link-${item.label.toLowerCase().replace(" ", "-")}`}
               >
-                <i className={cn(item.icon, "mr-3 text-sm")}></i>
-                {item.title}
-              </Button>
+                <i className={`${item.icon} text-lg w-5`}></i>
+                <span className="font-medium">{item.label}</span>
+              </a>
             </Link>
-          ))}
-        </div>
-
-        <div>
-          <h3 className="px-2 text-xs font-semibold text-sidebar-foreground/70 uppercase tracking-wider mb-2">
-            Quick Links
-          </h3>
-          {quickLinks.map((link) => (
-            <Button
-              key={link.href}
-              variant="ghost"
-              className="w-full justify-start text-left text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              asChild
-              data-testid={`sidebar-quick-${link.title.toLowerCase().replace(" ", "-")}`}
-            >
-              {link.external ? (
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center"
-                >
-                  <i className={cn(link.icon, "mr-3 text-sm")}></i>
-                  {link.title}
-                </a>
-              ) : (
-                <Link href={link.href}>
-                  <div className="flex items-center">
-                    <i className={cn(link.icon, "mr-3 text-sm")}></i>
-                    {link.title}
-                  </div>
-                </Link>
-              )}
-            </Button>
-          ))}
-        </div>
+          );
+        })}
       </nav>
 
-      {/* Footer */}
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
-          <div className="flex items-start space-x-2">
-            <i className="fas fa-exclamation-triangle text-yellow-600 dark:text-yellow-400 text-sm mt-0.5"></i>
-            <div>
-              <p className="text-xs font-medium text-yellow-800 dark:text-yellow-200 mb-1">
-                Legal Notice
-              </p>
-              <p className="text-xs text-yellow-700 dark:text-yellow-300">
-                Not legal advice. Consult an attorney for your specific situation.
-              </p>
-            </div>
-          </div>
-        </div>
+      {/* User Profile */}
+      <div className="p-4 border-t border-border">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="flex items-center space-x-3 w-full px-3 py-2 rounded-lg hover:bg-muted transition-colors"
+              data-testid="button-user-menu"
+            >
+              <Avatar className="w-9 h-9">
+                <AvatarImage
+                  src={user?.profileImageUrl}
+                  alt={getFullName(user?.firstName, user?.lastName)}
+                />
+                <AvatarFallback className="bg-primary text-primary-foreground text-sm font-semibold">
+                  {getInitials(user?.firstName, user?.lastName)}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-medium text-foreground">
+                  {getFullName(user?.firstName, user?.lastName)}
+                </p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
+              </div>
+              <i className="fas fa-ellipsis-v text-muted-foreground"></i>
+            </button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem data-testid="menu-item-profile">
+              <i className="fas fa-user mr-2"></i>
+              Profile Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="menu-item-settings">
+              <i className="fas fa-cog mr-2"></i>
+              Preferences
+            </DropdownMenuItem>
+            <DropdownMenuItem data-testid="menu-item-help">
+              <i className="fas fa-question-circle mr-2"></i>
+              Help Center
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              onClick={handleLogout}
+              className="text-destructive focus:text-destructive"
+              data-testid="menu-item-logout"
+            >
+              <i className="fas fa-sign-out-alt mr-2"></i>
+              Sign Out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-    </div>
+    </aside>
   );
 }
