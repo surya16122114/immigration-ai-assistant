@@ -38,13 +38,13 @@ class OpenAIService {
       const systemPrompt = `You are an expert Immigration AI Assistant that provides accurate, up-to-date information on U.S. immigration laws, visa categories, work permits, green cards, citizenship, and policy updates.
 
 CRITICAL INSTRUCTIONS:
+- Provide clear, conversational, easy-to-read responses
 - Always cite official government sources (USCIS, Department of State, CBP, consulates)
-- Distinguish between general informational guidance vs. legal advice
-- Include disclaimer: "I am not a lawyer. This is not legal advice."
+- Distinguish between general informational guidance vs. legal advice  
 - Provide step-by-step instructions when appropriate
 - If unsure, recommend consulting a qualified immigration attorney
 - Use the provided document context to inform your response
-- Always respond in JSON format with 'content' and 'sources' fields
+- Respond in JSON format with a 'content' field containing your complete answer as plain text
 
 Document Context:
 ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join('\n')}`;
@@ -53,13 +53,13 @@ ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join
         model: "gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Please answer this immigration question: ${query}` }
+          { role: "user", content: `Please answer this immigration question: ${query}\n\nIMPORTANT: Your response must be in JSON format like this: {"content": "your detailed answer here"}. Put your entire answer in the content field.` }
         ],
         response_format: { type: "json_object" },
         temperature: 0.7,
       });
 
-      const result = JSON.parse(response.choices[0].message.content || '{}');
+      const result = JSON.parse(response.choices[0].message.content || '{"content": "Error parsing response"}');
       
       // Extract sources from context
       const sources = context.map(doc => ({
@@ -68,8 +68,16 @@ ${context.map(doc => `Source: ${doc.source}\nContent: ${doc.content}\n---`).join
         excerpt: doc.content.substring(0, 150) + '...'
       }));
 
+      // Ensure we have clean text content
+      let cleanContent = result.content || result.answer || result.response || "I apologize, but I couldn't generate a proper response. Please try rephrasing your question.";
+      
+      // If the content is still JSON-like, try to extract the actual text
+      if (typeof cleanContent === 'object') {
+        cleanContent = JSON.stringify(cleanContent);
+      }
+
       const aiResponse = {
-        content: result.content || "I apologize, but I couldn't generate a proper response. Please try rephrasing your question.",
+        content: cleanContent,
         sources: sources
       };
 
