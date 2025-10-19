@@ -44,19 +44,19 @@ export default function PolicyUpdates() {
 
   if (isLoading) {
     return (
-      <Card className="border-border">
-        <CardHeader className="border-b border-border">
-          <CardTitle className="flex items-center text-lg">
+      <div className="card-premium">
+        <div className="p-6 border-b border-border/50">
+          <h3 className="font-heading font-bold text-xl flex items-center">
             <i className="fas fa-bullhorn text-primary mr-2"></i>
             Recent Policy Updates
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="divide-y divide-border p-0">
+          </h3>
+        </div>
+        <div className="divide-y divide-border/30">
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-24 w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
@@ -87,14 +87,14 @@ export default function PolicyUpdates() {
   const displayUpdates = updates && updates.length > 0 ? updates : defaultUpdates;
 
   return (
-    <Card className="border-border">
-      <CardHeader className="border-b border-border">
-        <CardTitle className="flex items-center text-lg">
+    <div className="card-premium">
+      <div className="p-6 border-b border-border/50">
+        <h3 className="font-heading font-bold text-xl flex items-center">
           <i className="fas fa-bullhorn text-primary mr-2"></i>
           Recent Policy Updates
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="divide-y divide-border p-0">
+        </h3>
+      </div>
+      <div className="divide-y divide-border/30">
         {displayUpdates.map((update: PolicyUpdate) => {
           const statusBadge = getUpdateStatus(update.publishedAt);
           return (
@@ -149,6 +149,6 @@ export default function PolicyUpdates() {
           View all updates
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }

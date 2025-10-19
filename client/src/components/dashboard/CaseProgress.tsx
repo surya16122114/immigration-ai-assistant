@@ -113,30 +113,30 @@ export default function CaseProgress() {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
+      <div className="card-premium">
+        <div className="p-4 border-b border-border/50">
+          <h3 className="font-heading font-semibold text-lg flex items-center">
             <i className="fas fa-tasks text-primary mr-2"></i>
             My Immigration Cases
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          </h3>
+        </div>
+        <div className="p-4 space-y-4">
           <Skeleton className="h-24 w-full" />
           <Skeleton className="h-24 w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center text-sm">
+    <div className="card-premium">
+      <div className="p-4 border-b border-border/50">
+        <h3 className="font-heading font-semibold text-lg flex items-center">
           <i className="fas fa-tasks text-primary mr-2"></i>
           My Immigration Cases
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="p-4">
         <div className="space-y-4">
           {cases && cases.length > 0 ? (
             cases.map((caseItem: Case) => (
@@ -195,7 +195,7 @@ export default function CaseProgress() {
         >
           + Track new case
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

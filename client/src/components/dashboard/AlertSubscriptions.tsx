@@ -139,31 +139,31 @@ export default function AlertSubscriptions() {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center text-sm">
+      <div className="card-premium">
+        <div className="p-4 border-b border-border/50">
+          <h3 className="font-heading font-semibold text-lg flex items-center">
             <i className="fas fa-bell text-primary mr-2"></i>
             Alert Subscriptions
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="p-4 space-y-3">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center text-sm">
+    <div className="card-premium">
+      <div className="p-4 border-b border-border/50">
+        <h3 className="font-heading font-semibold text-lg flex items-center">
           <i className="fas fa-bell text-primary mr-2"></i>
           Alert Subscriptions
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="p-4">
         <div className="space-y-3">
           {alertTypes.map((alertType) => {
             const isActive = isAlertActive(alertType.type);
@@ -193,7 +193,7 @@ export default function AlertSubscriptions() {
         >
           Manage all alerts
         </Button>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -117,30 +117,30 @@ export default function SavedQueries() {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center text-sm">
+      <div className="card-premium">
+        <div className="p-4 border-b border-border/50">
+          <h3 className="font-heading font-semibold text-lg flex items-center">
             <i className="fas fa-bookmark text-primary mr-2"></i>
             Saved Queries
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
+          </h3>
+        </div>
+        <div className="p-4 space-y-3">
           <Skeleton className="h-16 w-full" />
           <Skeleton className="h-16 w-full" />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center text-sm">
+    <div className="card-premium">
+      <div className="p-4 border-b border-border/50">
+        <h3 className="font-heading font-semibold text-lg flex items-center">
           <i className="fas fa-bookmark text-primary mr-2"></i>
           Saved Queries
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+        </h3>
+      </div>
+      <div className="p-4">
         <div className="space-y-3">
           {savedQueries && savedQueries.length > 0 ? (
             savedQueries.map((query: SavedQuery) => (
@@ -191,7 +191,7 @@ export default function SavedQueries() {
             </div>
           )}
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
